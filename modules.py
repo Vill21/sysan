@@ -1,7 +1,9 @@
+from io import StringIO
 import queue
 from typing import Any
 from math import log
-
+import csv
+import os
 
 class Node:
     def __init__(self, data: Any, parent: Any = None, children: list = None) -> None:
@@ -80,18 +82,12 @@ class GraphNodeLevel:
         if parents != None:
             self.parents = parents
             for parent in parents:
-                if parent.children != None:
-                    parent.set_children(parent.children + [self])
-                else:
-                    parent.set_children([self])
+                parent.add_children([self])
         
         if children != None:
             self.children = children
             for child in children:
-                if child.parents != None:
-                    child.set_parents(child.parents + [self])
-                else:
-                    child.set_parents([self])
+                child.add_parents([self])
 
     def __str__(self) -> str:
         return str(self.data)
@@ -99,8 +95,23 @@ class GraphNodeLevel:
     def set_children(self, children: list) -> None:
         self.children = children
 
+    def add_children(self, children: list) -> None:
+        if self.children != None:
+            self.set_children(self.children + children)
+        else:
+            self.set_children(children)
+
     def set_parents(self, parents: list) -> None:
         self.parents = parents
+
+    def add_parents(self, parents: list) -> None:
+        if self.parents != None:
+            self.set_parents(self.parents + parents)
+        else:
+            self.set_parents(parents)
+
+    def set_level(self, level: int) -> None:
+        self.level = level
 
 def r1(root: GraphNodeLevel) -> dict:
     visited_children = [root]
@@ -279,3 +290,31 @@ def l_matrix(nodes: list, k: int):
         raise ValueError(f"k arg must be equal to 2 or 5, got {k}.")
 
     return l
+
+def read_csv(file_path) -> list[str]:
+    output = []
+
+    # reading csv file
+    with open(file_path, "r", newline="") as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=",", quotechar="|")
+        
+        for row in csv_reader:
+            row_stripped = []
+            for i in row:
+                row_stripped.append(i.strip())
+            output.append(row_stripped)
+
+    return output
+
+def translate_csv(csv_string) -> list[str]:
+    output = []
+
+    csv_file = StringIO(csv_string)
+    csv_reader = csv.reader(csv_file, delimiter=",", quotechar="|")
+    for row in csv_reader:
+        row_stripped = []
+        for i in row:
+            row_stripped.append(i.strip())
+        output.append(row_stripped)
+
+    return output

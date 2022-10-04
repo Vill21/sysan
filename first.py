@@ -1,5 +1,6 @@
 from traceback import print_tb
 from modules import *
+from task3.task3 import task
 
 def test_r1_r2():
     first = Node(1)
@@ -141,7 +142,18 @@ def test3_1_debug_graph():
 
     print("Ответ на второй пункт задачи 3.3 равен {:.4g}".format(result))
 
+def test_read_csv() -> None:
+    l = read_csv("./sample.csv")
+
+def test_task33() -> None:
+    with open('sample.csv') as file:
+        csvString = file.read()
+        result = task(csvString)
+
+        for i in result:
+            print(i)
+
 def main() -> None:
-    test3_1_debug_graph()
+    test_task33()
 
 main()
