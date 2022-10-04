@@ -1,3 +1,4 @@
+from traceback import print_tb
 from modules import *
 
 def test_r1_r2():
@@ -99,7 +100,48 @@ def test3_1_r5():
     print(fourth, r5_dict.get(fourth)[0], r5_dict.get(fourth)[1])
     print(fifth, r5_dict.get(fifth)[0], r5_dict.get(fifth)[1])
 
+def test3_1_debug():
+    first = NodeLevel(1, 1)
+    second = NodeLevel(2, 2, first, [first])
+    third = NodeLevel(3, 3, second, [second])
+    fourth = NodeLevel(4, 2, first, [first])
+    fifth = NodeLevel(5, 3, fourth, [fourth])
+
+    l = l_matrix([first, second, third, fourth, fifth], 5)
+    result = H(l)
+
+def test3_1_debug2():
+    first = GraphNodeLevel(1, 1)
+    second = GraphNodeLevel(2, 2, [first], None)
+    third = GraphNodeLevel(3, 3, [second], None)
+    fourth = GraphNodeLevel(4, 3, [second], None)
+
+    l = l_matrix([first, second, third, fourth], 5)
+    result = H(l)
+
+    print("Ответ на первый пункт задачи 3.2 равен {:.4g}".format(result))
+
+def test3_1_debug_graph():
+    first = GraphNodeLevel(1, 1)
+    second = GraphNodeLevel(2, 2, [first], [first])
+    fourth = GraphNodeLevel(4, 2, [first], [first])
+    third = GraphNodeLevel(3, 3, [second, fourth], [second, fourth])
+
+    #print_lambda = lambda node: print(node, '\n', len(node.parents), '\n', node.parents[0], node.parents[1], '\n', len(node.children), '\n', node.children[0], node.children[1])
+
+    #print_lambda(first)
+    #print_lambda(second)
+    #print_lambda(third)
+    #print_lambda(fourth)
+
+
+    l = l_matrix([first, second, third, fourth], 5)
+    print(l)
+    result = H(l)
+
+    print("Ответ на второй пункт задачи 3.3 равен {:.4g}".format(result))
+
 def main() -> None:
-    test3_1_r5()
+    test3_1_debug_graph()
 
 main()

@@ -70,165 +70,160 @@ class NodeLevel (Node):
     def set_level(self, level: int) -> None:
         self.level = level
 
-def r1(root: Node) -> dict:
-    visited = [root]
-    q = queue.SimpleQueue()
+class GraphNodeLevel:
+    def __init__(self, data: Any, level: int, parents: list = None, children: list = None) -> None:
+        self.data = data
+        self.parents = None
+        self.children = None
+        self.level = level
+
+        if parents != None:
+            self.parents = parents
+            for parent in parents:
+                if parent.children != None:
+                    parent.set_children(parent.children + [self])
+                else:
+                    parent.set_children([self])
+        
+        if children != None:
+            self.children = children
+            for child in children:
+                if child.parents != None:
+                    child.set_parents(child.parents + [self])
+                else:
+                    child.set_parents([self])
+
+    def __str__(self) -> str:
+        return str(self.data)
+
+    def set_children(self, children: list) -> None:
+        self.children = children
+
+    def set_parents(self, parents: list) -> None:
+        self.parents = parents
+
+def r1(root: GraphNodeLevel) -> dict:
+    visited_children = [root]
+    cq = queue.SimpleQueue()
+    cq.put(root)
 
     r1_output = {}
-    pointer = root
-
-    while True:
-        if pointer.children == None:
-            if q.empty():
-                break
-
-            pointer = q.get()
-            continue
-
-        if r1_output.get(pointer) ==  None:
-            r1_output[pointer] = []
-
-        for child in pointer.children:
-            r1_output[pointer].append(child)
-            if child not in visited:
-                q.put(child)
-
-        if q.empty():
-            break
-
-        pointer = q.get()
-        visited.append(pointer)
+    while not cq.empty():
+        pointer = cq.get()
+        if pointer.children != None:
+            if r1_output.get(pointer) ==  None:
+                r1_output[pointer] = []
+            for child in pointer.children:
+                r1_output[pointer].append(child)
+                if child not in visited_children:
+                    cq.put(child)
+                    visited_children.append(child)
 
     return r1_output
 
-def r2(root: Node) -> dict:
-    visited = [root]
-    q = queue.SimpleQueue()
+def r2(root: GraphNodeLevel) -> dict:
+    visited_children = [root]
+    cq = queue.SimpleQueue()
+    cq.put(root)
 
     r2_output = {}
-    pointer = root
-
-    while True:
-        if pointer.children == None:
-            if q.empty():
-                break
-
-            pointer = q.get()
-            continue
-
-        for child in pointer.children:
-            if r2_output.get(child) ==  None:
-                r2_output[child] = []
-            r2_output[child].append(pointer)
-            if child not in visited:
-                q.put(child)
-
-        if q.empty():
-            break
-
-        pointer = q.get()
-        visited.append(pointer)
+    while not cq.empty():
+        pointer = cq.get()
+        if pointer.children != None:
+            for child in pointer.children:
+                if r2_output.get(child) == None:
+                    r2_output[child] = []
+                r2_output[child].append(pointer)
+                if child not in visited_children:
+                    cq.put(child)
+                    visited_children.append(child)
 
     return r2_output
 
-def r3(root: Node) -> dict:
-    visited = [root]
-    q = queue.SimpleQueue()
+def r3(root: GraphNodeLevel) -> dict:
+    visited_children = [root]
+    cq = queue.SimpleQueue()
+    cq.put(root)
 
     r3_output = {}
-    pointer = root
+    while not cq.empty():
+        pointer = cq.get()
+        if pointer.children != None:
+            for child in pointer.children:
+                if child not in visited_children:
+                    cq.put(child)
+                    visited_children.append(child)
 
-    while True:
-        if pointer.children == None:
-            if q.empty():
-                break
-
-            pointer = q.get()
-            continue
-
-        for child in pointer.children:
-            if pointer.parent != None:
-                parent_pointer = pointer.parent
-                if r3_output.get(parent_pointer) ==  None:
-                    r3_output[parent_pointer] = []
-                while parent_pointer != None:
-                    r3_output[parent_pointer].append(child)
-                    parent_pointer = parent_pointer.parent
-
-            if child not in visited:
-                q.put(child)
-
-        if q.empty():
-            break
-
-        pointer = q.get()
-        visited.append(pointer)
+        visited_parents = [pointer]
+        pq = queue.SimpleQueue()
+        pq.put(pointer)
+        cur_level = pointer.level
+        while not pq.empty():
+            pointer_parent = pq.get()
+            if pointer_parent.parents == None:
+                continue
+            for parent in pointer_parent.parents:
+                if parent not in visited_parents and parent.level < cur_level:
+                    pq.put(parent)
+                    visited_parents.append(parent)
+                    if cur_level - parent.level > 1:
+                        if r3_output.get(parent) == None:
+                            r3_output[parent] = []
+                        r3_output[parent].append(pointer)
 
     return r3_output
 
-def r4(root: Node) -> dict:
-    visited = [root]
-    q = queue.SimpleQueue()
+def r4(root: GraphNodeLevel) -> dict:
+    visited_children = [root]
+    cq = queue.SimpleQueue()
+    cq.put(root)
 
     r4_output = {}
-    pointer = root
+    while not cq.empty():
+        pointer = cq.get()
+        if pointer.children != None:
+            for child in pointer.children:
+                if child not in visited_children:
+                    cq.put(child)
+                    visited_children.append(child)
 
-    while True:
-        if pointer.children == None:
-            if q.empty():
-                break
-
-            pointer = q.get()
-            continue
-
-        for child in pointer.children:
-            if pointer.parent != None:
-                parent_pointer = pointer.parent
-                if r4_output.get(child) ==  None:
-                    r4_output[child] = []
-                while parent_pointer != None:
-                    r4_output[child].append(parent_pointer)
-                    parent_pointer = parent_pointer.parent
-
-            if child not in visited:
-                q.put(child)
-
-        if q.empty():
-            break
-
-        pointer = q.get()
-        visited.append(pointer)
+        visited_parents = [pointer]
+        pq = queue.SimpleQueue()
+        pq.put(pointer)
+        cur_level = pointer.level
+        while not pq.empty():
+            pointer_parent = pq.get()
+            if pointer_parent.parents == None:
+                continue
+            for parent in pointer_parent.parents:
+                if parent not in visited_parents and parent.level < cur_level:
+                    pq.put(parent)
+                    visited_parents.append(parent)
+                    if cur_level - parent.level > 1:
+                        if r4_output.get(pointer) == None:
+                            r4_output[pointer] = []
+                        r4_output[pointer].append(parent)
 
     return r4_output
 
-def r5(root: NodeLevel) -> dict:
-    visited = [root]
-    q = queue.SimpleQueue()
+def r5(root: GraphNodeLevel) -> dict:
+    visited_children = []
+    cq = queue.SimpleQueue()
+    cq.put(root)
 
     r5_output = {}
-    levels = {root.level: [root]}
-    pointer = root
+    levels = {}
 
-    while True:
-        if pointer.children == None:
-            if q.empty():
-                break
-
-            pointer = q.get()
-            continue
-
-        for child in pointer.children:
-            if levels.get(child.level) == None:
-                levels[child.level] = []
-            levels[child.level].append(child)
-            if child not in visited:
-                q.put(child)
-
-        if q.empty():
-            break
-
-        pointer = q.get()
-        visited.append(pointer)
+    while not cq.empty():
+        pointer = cq.get()
+        visited_children.append(pointer)
+        if pointer.children != None:
+            for child in pointer.children:
+                if child not in visited_children:
+                    cq.put(child)
+                    if levels.get(child.level) == None:
+                        levels[child.level] = []
+                    levels[child.level].append(child)
 
     for key in levels:
         if len(levels[key]) > 1:
