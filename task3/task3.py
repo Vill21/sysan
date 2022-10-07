@@ -1,11 +1,10 @@
 from modules import r1, r2, r3, r4, r5, GraphNodeLevel, translate_csv
 import queue
 
-def task(csv_file) -> list[list[list[str]]]:
+def task(csv_file) -> list[list[str]]:
     """ Возвращает массив отношений для пар вершин системы вида дерева. """
 
     nodes = translate_csv(csv_file)
-    print(nodes)
 
     # creating instances of GraphNodeLevel without levels being set
     data_node: dict = {}
@@ -48,8 +47,7 @@ def task(csv_file) -> list[list[list[str]]]:
     def get_r_list(rk_dict: dict) -> list[list[str]]:
         output = []
         for key in rk_dict:
-            for item in rk_dict.get(key):
-                output.append([node_data.get(key), node_data.get(item)])
+            output.append(node_data.get(key))
         
         return output
 
