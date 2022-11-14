@@ -43,7 +43,8 @@ def task(csv_file):
             q.put(child)
 
     l = l_matrix([key for key in node_data], 5)
-    entropy = H(l, 5, 2)
+    n = len(data_node)
+    entropy = H(l, n, 2)
 
     return entropy
 
