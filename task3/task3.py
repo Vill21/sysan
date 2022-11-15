@@ -4,7 +4,7 @@ ROOT = os.path.abspath(os.pardir)
 
 sys.path.insert(1, ROOT)
 
-from modules import r1, r2, r3, r4, r5, GraphNodeLevel, translate_csv
+from modules import r1, r2, r3, r4, r5, node_dicts_from_csv, GraphNodeLevel, translate_csv
 import queue
 
 def task(csv_file) -> list[list[str]]:
@@ -13,23 +13,9 @@ def task(csv_file) -> list[list[str]]:
     nodes = translate_csv(csv_file)
 
     # creating instances of GraphNodeLevel without levels being set
-    data_node: dict = {}
-    node_data: dict = {}
-    for i in nodes:
-        if data_node.get(i[0]) == None:
-            node = GraphNodeLevel(i[0], 0)
-            data_node[i[0]] = node
-            node_data[node] = i[0]
-        if data_node.get(i[1]) == None:
-            node = GraphNodeLevel(i[1], 0)
-            data_node[i[1]] = node
-            node_data[node] = i[1]
-        
-        first: GraphNodeLevel = data_node.get(i[0])
-        second: GraphNodeLevel = data_node.get(i[1])
-
-        first.add_children([second])
-        second.add_parents([first])
+    node_dicts = node_dicts_from_csv(nodes)
+    data_node = node_dicts[0]
+    node_data = node_dicts[1]
 
     # setting levels for each node in a tree
     root: GraphNodeLevel = data_node.get(nodes[0][0])

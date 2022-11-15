@@ -318,3 +318,25 @@ def translate_csv(csv_string) -> list[str]:
         output.append(row_stripped)
 
     return output
+
+def node_dicts_from_csv(nodes) -> list[dict]:
+    # creating instances of GraphNodeLevel without levels being set
+    data_node: dict = {}
+    node_data: dict = {}
+    for i in nodes:
+        if data_node.get(i[0]) == None:
+            node = GraphNodeLevel(i[0], 0)
+            data_node[i[0]] = node
+            node_data[node] = i[0]
+        if data_node.get(i[1]) == None:
+            node = GraphNodeLevel(i[1], 0)
+            data_node[i[1]] = node
+            node_data[node] = i[1]
+        
+        first: GraphNodeLevel = data_node.get(i[0])
+        second: GraphNodeLevel = data_node.get(i[1])
+
+        first.add_children([second])
+        second.add_parents([first])
+    
+    return [data_node, node_data]
